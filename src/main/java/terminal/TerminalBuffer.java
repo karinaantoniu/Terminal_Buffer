@@ -15,8 +15,10 @@ public class TerminalBuffer {
     private Set<Style> currentStyles;
 
     private final Deque<TerminalRow> scrollBack;
-
     private TerminalRow[] screen;
+    private List<TerminalObserver> observers = new ArrayList<>();
+    private List<String> commandHistory = new ArrayList<>();
+
 
     public TerminalBuffer(int w, int h, int maxScroll) {
         this.width = w;
@@ -130,6 +132,7 @@ public class TerminalBuffer {
 
             i += charCount;
         }
+        notifyObservers();
     }
 
     public void fillLine(String c) {
@@ -205,6 +208,7 @@ public class TerminalBuffer {
                 screen[i].getCell(j).resetCell();
         cursorX = 0;
         cursorY = 0;
+        notifyObservers();
     }
 
     public void clearScreenScrollBack() {
@@ -338,7 +342,7 @@ public class TerminalBuffer {
         return 1;
     }
 
-    public int removeEmptyCells(List<Cell> line) {
+    public void removeEmptyCells(List<Cell> line) {
         // removes all the empty cells from the end of a logic line
         // when we combine 2 lines, we must ignore the empty cells, and not treat them as part of the paragraph
         for (int i = line.size() - 1; i >= 0; i--) {
@@ -452,5 +456,30 @@ public class TerminalBuffer {
         this.screen = newScreen;
         this.width = newWidth;
         this.height = newHeight;
+        notifyObservers();
+    }
+
+    public void addObserver(TerminalObserver observer) {
+        this.observers.add(observer);
+    }
+
+    private void notifyObservers() {
+        for (TerminalObserver obs : observers) {
+            obs.onTerminalChanged();
+        }
+    }
+
+    public void saveCommandToHistory(String command) {
+        commandHistory.add(command);
+    }
+
+    public List<String> getCommandHistory() {
+        return commandHistory;
+    }
+
+    public void clearCommandHistory() {
+        if (commandHistory != null) {
+            commandHistory.clear();
+        }
     }
 }
