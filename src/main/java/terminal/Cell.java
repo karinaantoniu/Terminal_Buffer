@@ -4,7 +4,8 @@ import java.util.EnumSet;
 import java.util.Set;
 
 public class Cell {
-    private char character;
+    private String character;
+    private boolean isPlaceHolder;
 
     private Color bg;
     private Color fg;
@@ -15,13 +16,14 @@ public class Cell {
     private Set<Style> style;
 
     public Cell () {
-        this.character = ' ';
+        this.character = " ";
+        this.isPlaceHolder = false;
         this.bg = Color.DEFAULT;
         this.fg = Color.DEFAULT;
         this.style = EnumSet.noneOf(Style.class);
     }
 
-    public void set(char car, Color c_bg, Color c_fg, Set<Style> st) {
+    public void set(String car, Color c_bg, Color c_fg, Set<Style> st) {
         this.character = car;
         this.bg = c_bg;
         this.fg = c_fg;
@@ -32,4 +34,26 @@ public class Cell {
         }
     }
 
+    public String getCharacter() {
+        return character;
+    }
+
+    public Color getBg() { return bg; }
+
+    public Color getFg() { return fg; }
+
+    public Set<Style> getStyles() { return style; }
+
+    public void resetCell() {
+        this.character = " ";
+        this.isPlaceHolder = false;
+        this.bg = Color.DEFAULT;
+        this.fg = Color.DEFAULT;
+        this.style = EnumSet.noneOf(Style.class);
+    }
+
+    public void setPlaceholder() {
+        this.character = "";
+        this.isPlaceHolder = true;
+    }
 }
