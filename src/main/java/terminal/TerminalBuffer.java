@@ -347,7 +347,7 @@ public class TerminalBuffer {
         // when we combine 2 lines, we must ignore the empty cells, and not treat them as part of the paragraph
         for (int i = line.size() - 1; i >= 0; i--) {
             String ch = line.get(i).getCharacter();
-            if (ch.equals(" ")) {
+            if (ch == null || ch.equals(" ") || ch.equals("")) {
                 line.remove(i);
             } else {
                 break;
@@ -415,6 +415,24 @@ public class TerminalBuffer {
                     newRow.setWrapped(false);
                 }
                 allNewRows.add(newRow);
+            }
+        }
+
+        // remove all filler lines from the end
+        while (allNewRows.size() > 1) {
+            TerminalRow lastRow = allNewRows.get(allNewRows.size() - 1);
+            boolean isEmpty = true;
+            for (int i = 0; i < newWidth; i++) {
+                String ch = lastRow.getCell(i).getCharacter();
+                if (ch != null && !ch.equals(" ") && !ch.equals("")) {
+                    isEmpty = false;
+                    break;
+                }
+            }
+            if (isEmpty) {
+                allNewRows.remove(allNewRows.size() - 1);
+            } else {
+                break;
             }
         }
 
